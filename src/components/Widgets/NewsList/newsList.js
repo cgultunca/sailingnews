@@ -65,8 +65,6 @@ export default class NewsList extends Component {
                     {this.RenderNews(this.props.type)}
                 </TransitionGroup>
 
-
-
                 <div onClick={() => this.loadMore()}>
                     Load More
                 </div>
