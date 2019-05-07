@@ -25,7 +25,7 @@ class NewsList extends Component {
 
         if (this.state.teams.length < 1) {
             axios.get(`${URL}/teams`)
-                .then (response => {
+                .then(response => {
                     this.setState({
                         teams: response.data
                     })
@@ -35,7 +35,9 @@ class NewsList extends Component {
         axios.get(`${URL}/articles?_start=${start}&_end=${end}`)
             .then(response => {
                 this.setState({
-                    items: [...this.state.items, ...response.data]
+                    items: [...this.state.items, ...response.data],
+                    start,
+                    end
                 })
             })
     }
@@ -61,11 +63,43 @@ class NewsList extends Component {
                         <div>
                             <div className={styles.newslist_item}>
                                 <Link to={`/articles/${item.id}`}>
-                                <CardInfo teams = {this.state.teams} team = {item.team} date ={item.date}></CardInfo>
+                                    <CardInfo teams={this.state.teams} team={item.team} date={item.date}></CardInfo>
                                     <h2>{item.title}</h2>
                                 </Link>
                             </div>
                         </div>
+                    </CSSTransition>
+
+                )
+                )
+                break;
+            case ('cardMain'):
+                template = this.state.items.map((item, i) => (
+                    <CSSTransition
+                        classNames={{
+                            enter: styles.newslist_wrapper,
+                            enterActive: styles.newslist_wrapper_enter
+                        }}
+                        timeout={500}
+                        key={i}
+                    >
+                        <Link to={`/articles/${item.id}`}>
+                            <div className={styles.flex_wrapper}>
+                                <div className={styles.left}
+                                    style={{
+                                        background: `url(/images/videos/${item.image})`
+                                    }}
+                                >
+                                    <div></div>
+                                </div>
+                                <div className={styles.right}>
+                                    <CardInfo teams={this.state.teams} team={item.team} date={item.date}></CardInfo>
+                                    <h2>{item.title}</h2>
+                                </div>
+
+                            </div>
+                        </Link>
+
                     </CSSTransition>
 
                 )
