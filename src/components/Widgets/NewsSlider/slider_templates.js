@@ -1,6 +1,6 @@
 import React from 'react';
 import Slick from 'react-slick';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import style from './slider.css';
 const SlideTemplates = (props) => {
 
@@ -22,15 +22,16 @@ const SlideTemplates = (props) => {
                     <div key={i}>
                         <div className={styleMedia.feutured_item}>
                             <div className={style.featured_image}
-                            style={{
-                                background: `url(../images/articles/${item.image})`
-                            }}>
-                            </div>
+                                style={{
+                                    background: `url(../images/news/${item.image})`
+                                }}>
+                            
                             <Link to={`/articles/${item.id}`}>
-                            <div className={style.featured_caption}>
-{item.title}
-                            </div>
+                                <div className={style.featured_caption}>
+                                    {item.title}
+                                </div>
                             </Link>
+                            </div>
                         </div>
                     </div>
                 )
