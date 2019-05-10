@@ -1,0 +1,16 @@
+//Fill this form correct information from Firebase Console
+//Change file name to firebaseConfig.js
+
+const firebaseConfig = {
+    apiKey: "apiKey",
+    authDomain: "authDomain",
+    databaseURL: "databaseURL",
+    projectId: "projectId",
+    storageBucket: "storageBucket",
+    messagingSenderId: "messagingSenderId",
+    appId: "appId"
+  };
+
+  export {
+      firebaseConfig
+  }
