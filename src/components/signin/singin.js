@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import styles from './signin.css'
 import FormField from '../Widgets/FormFields/formFields';
+import { firebase } from '../../firebase';
+
 export default class SingIn extends Component {
 
     state = {
@@ -55,7 +57,7 @@ export default class SingIn extends Component {
         if (element.blur) {
             let validData = this.validate(newElement);
             newElement.valid = validData[0];
-            newElement.validationMessage=validData[1];
+            newElement.validationMessage = validData[1];
         }
         newElement.touched = element.blur;
         newFormdata[element.id] = newElement;
@@ -86,11 +88,72 @@ export default class SingIn extends Component {
         return error;
     }
 
+    submitForm = (event, type) => {
+        event.preventDefault();
+        if (type !== null) {
+            let dataToSubmit = {};
+            let formIsValid = true;
+            for (let key in this.state.formData) {
+                dataToSubmit[key] = this.state.formData[key].value;
+            }
+            for (let key in this.state.formData) {
+                formIsValid = this.state.formData[key].valid && formIsValid;
+            }
+            if (formIsValid) {
+                this.setState({
+                    loading: true,
+                    registerError: ''
+                })
+            }
+            if (type) {
+                firebase.auth().signInWithEmailAndPassword(
+                    dataToSubmit.email,
+                    dataToSubmit.password
+                ).then(() => {
+                    this.props.history.push('/');
+                }).catch(error => {
+                    this.setState({
+                        loading: false,
+                        registerError: error.message
+                    })
+                })
+            } else {
+                firebase.auth().createUserWithEmailAndPassword(
+                    dataToSubmit.email,
+                    dataToSubmit.password
+                ).then(() => {
+                    this.props.history.push('/');
+                }).catch(error => {
+                    this.setState({
+                        loading: false,
+                        registerError: error.message
+                    })
+                })
+            }
+        }
+    }
+
+    submitButton = () => (
+        this.state.loading ? 'Loading...' :
+            <div>
+                <button onClick={(event) => this.submitForm(event, false)}>Register now</button>
+                <button onClick={(event) => this.submitForm(event, true)}>Log In</button>
+
+            </div>
+    )
+
+    showError = () => (
+        this.state.registerError !== '' ?
+            <div className={styles.error}>{this.state.registerError}</div>
+            : ''
+    )
+
+
     render() {
         return (
             <div className={styles.logContainer}>
                 <h2>Register / Log In</h2>
-                <form>
+                <form onSubmit={(event) => this.submitForm(event, null)}>
                     <FormField
                         id={'email'}
                         formdata={this.state.formData.email}
@@ -101,6 +164,8 @@ export default class SingIn extends Component {
                         formdata={this.state.formData.password}
                         change={(element) => this.updateForm(element)}
                     ></FormField>
+                    {this.submitButton()}
+                    {this.showError()}
                 </form>
             </div>
         )
