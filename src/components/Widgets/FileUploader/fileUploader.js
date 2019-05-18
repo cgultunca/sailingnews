@@ -75,6 +75,7 @@ export default class Uploader extends Component {
                             width: '300px'
                         }}
                         src={this.state.fileURL}
+                        alt={this.state.name}
                     />
                     : null
                 }

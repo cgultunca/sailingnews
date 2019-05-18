@@ -14,11 +14,9 @@ export default class NewsArticle extends Component {
     }
 
     componentWillMount() {
-
         firebaseDB.ref(`articles/${this.props.match.params.id}`).once('value')
             .then((snapshot) => {
                 let article = snapshot.val();
-
                 firebaseTeams.orderByChild('teamId').equalTo(article.team).once('value')
                     .then((snapshot) => {
                         const team = firebaseLooper(snapshot);

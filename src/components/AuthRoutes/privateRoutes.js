@@ -3,8 +3,9 @@ import {Route,Redirect} from 'react-router-dom'
 
 const PrivateRoutes = ({
     user,
-    component:Comp},
+    component:Comp,
     ...rest
+}
     ) => {
     return (
        <Route {...rest} component ={(props)=>(
