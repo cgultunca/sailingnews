@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 // import Axios from 'axios';
 // import { URL } from '../../../../config'
-import {firebaseDB,firebaseTeams,firebaseLooper} from '../../../../firebase'
+import { firebase, firebaseDB, firebaseTeams, firebaseLooper } from '../../../../firebase'
 import styles from '../../articles.css'
 import Header from './header';
 
@@ -9,24 +9,26 @@ export default class NewsArticle extends Component {
 
     state = {
         article: [],
-        team: []
+        team: [],
+        imageURL: ''
     }
 
     componentWillMount() {
 
         firebaseDB.ref(`articles/${this.props.match.params.id}`).once('value')
-        .then((snapshot)=>{
-            let article = snapshot.val();
+            .then((snapshot) => {
+                let article = snapshot.val();
 
-            firebaseTeams.orderByChild('teamId').equalTo(article.team).once('value')
-            .then((snapshot)=>{
-                const team = firebaseLooper(snapshot);
-                this.setState({
-                    article,
-                    team
-                })
+                firebaseTeams.orderByChild('teamId').equalTo(article.team).once('value')
+                    .then((snapshot) => {
+                        const team = firebaseLooper(snapshot);
+                        this.setState({
+                            article,
+                            team
+                        })
+                    })
+                    this.getImageUrl(article.image);
             })
-        })
 
 
         // Axios.get(`${URL}/articles?id=${this.props.match.params.id}`)
@@ -42,6 +44,14 @@ export default class NewsArticle extends Component {
         //             })
 
         //     })
+    }
+
+    getImageUrl = (filename) => {
+        firebase.storage().ref('images')
+            .child(filename).getDownloadURL()
+            .then((url) => {
+                this.setState({ imageURL: url })
+            })
     }
 
     render() {
@@ -60,11 +70,14 @@ export default class NewsArticle extends Component {
                     <h1>{article.title}</h1>
                     <div className={styles.articleImage}
                         style={{
-                            background: `url(/images/news/${article.image})`
+                            background: `url('${this.state.imageURL}')`
                         }}
                     ></div>
-                    <div className={styles.articleText}>
-                        {article.body}
+                    <div className={styles.articleText}
+                    dangerouslySetInnerHTML={{
+                        __html:article.body
+                    }}
+                    >
                     </div>
                 </div>
             </div>

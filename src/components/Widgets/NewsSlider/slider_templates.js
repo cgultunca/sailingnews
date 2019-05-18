@@ -23,7 +23,7 @@ const SlideTemplates = (props) => {
                         <div className={styleMedia.feutured_item}>
                             <div className={style.featured_image}
                                 style={{
-                                    background: `url(../images/news/${item.image})`
+                                    background: `url(${item.image})`
                                 }}>
                             
                             <Link to={`/articles/${item.id}`}>

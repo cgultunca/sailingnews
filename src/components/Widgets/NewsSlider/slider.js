@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import SlideTemplates from './slider_templates'
 // import {URL} from '../../../config'
 // import axios from 'axios';
-import {firebaseArticles,firebaseLooper} from '../../../firebase'
+import { firebaseArticles, firebaseLooper, firebase } from '../../../firebase'
 class NewsSlider extends Component {
 
     state = {
@@ -10,16 +10,43 @@ class NewsSlider extends Component {
     }
     componentWillMount() {
         firebaseArticles.limitToFirst(3).once("value")
-        .then((snapshot)=>{
-           const news  = firebaseLooper(snapshot);
-            this.setState({
-                news
-            })
-        });
+            .then((snapshot) => {
+                const news = firebaseLooper(snapshot);
 
-       
+                // news.forEach((item, i) => {
+                //     firebase.storage().ref('images')
+                //         .child(item.image).getDownloadURL()
+                //         .then(url => {
+                //             news[i].image = url;
+                //             this.setState({
+                //                 news
+                //             })
+                //         })
+                // })
 
+                const asyncFunction = (item, i, cb) => {
+                    firebase.storage().ref('images')
+                        .child(item.image).getDownloadURL()
+                        .then(url => {
+                            news[i].image = url;
+                            cb()
+                        })
+                }
 
+                //let request=[]
+                let requests = news.map((item, i) => {
+                    return new Promise((resolve) => {
+                        asyncFunction(item, i, resolve)
+                    })
+                })
+
+                Promise.all(requests).then(() => {
+                    this.setState({
+                        news
+                    })
+                })
+
+            });
 
         // axios.get(`${URL}/articles?_start=${this.props.start}&_end=${this.props.amount}`)
         //     .then(response => {
@@ -34,7 +61,7 @@ class NewsSlider extends Component {
     render() {
         return (
             <div>
-                <SlideTemplates data={this.state.news} type={this.props.type} settings = {this.props.settings}/>
+                <SlideTemplates data={this.state.news} type={this.props.type} settings={this.props.settings} />
             </div>
         )
     }
